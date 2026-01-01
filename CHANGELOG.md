@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-01-01
+
 ### Added
 - `thx doctor` command for diagnosing setup issues
 - Long descriptions and examples for all commands

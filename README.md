@@ -311,6 +311,62 @@ database: "/path/to/Things Database.thingsdatabase/main.sqlite"
 
 This means `thx` never writes directly to your database — all modifications go through Things 3's official API.
 
+## Development
+
+### Prerequisites
+
+- Go 1.21+ (uses `modernc.org/sqlite`, no CGO required)
+- macOS with Things 3 installed (for testing)
+
+### Building
+
+```bash
+# Clone the repo
+git clone https://github.com/peeomid/thx.git
+cd thx
+
+# Build
+go build -o thx ./cmd/thx
+
+# Or install to $GOPATH/bin
+go install ./cmd/thx
+```
+
+### Running Tests
+
+```bash
+go test ./...
+```
+
+### Project Structure
+
+```
+thx/
+├── cmd/thx/           # CLI entrypoint
+├── internal/
+│   ├── cli/           # Cobra commands and flag wiring
+│   ├── config/        # Configuration loading (file, env, defaults)
+│   ├── db/            # Database path resolution and queries
+│   ├── output/        # Output formatting (default, JSON, quiet)
+│   └── things/        # Data models, date encoding, URL scheme
+└── .goreleaser.yaml   # Release automation
+```
+
+### Releasing
+
+Releases are automated with [GoReleaser](https://goreleaser.com/):
+
+```bash
+# Create a tag
+git tag v0.2.0
+git push origin v0.2.0
+
+# Release (requires GITHUB_TOKEN)
+goreleaser release --clean
+```
+
+This builds binaries for macOS (arm64 + amd64) and updates the Homebrew tap.
+
 ## Built With
 
 This project was vibe coded with [Claude Code](https://claude.com/claude-code) and [Codex](https://openai.com/codex).

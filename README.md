@@ -6,9 +6,11 @@ A command-line interface for [Things 3](https://culturedcode.com/things/) on mac
 
 ## Why thx?
 
+I built `thx` so I could use Things 3 with AI assistants like Claude and ChatGPT. With JSON output and a scriptable interface, AI agents can read your tasks, add new ones, and help you stay organized — all through natural conversation.
+
+- **AI-friendly** — JSON output makes it easy for AI agents to read and manage your tasks
 - **Stay in flow** — Add tasks without switching apps
 - **Script your workflows** — Automate task creation with shell scripts, cron jobs, or CI pipelines
-- **JSON output** — Pipe your tasks to `jq`, build dashboards, or integrate with other tools
 - **Fast** — Native Go binary, instant response times
 
 ## Installation

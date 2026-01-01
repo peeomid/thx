@@ -283,6 +283,10 @@ database: "/path/to/Things Database.thingsdatabase/main.sqlite"
 
 This means `thx` never writes directly to your database — all modifications go through Things 3's official API.
 
+## Built With
+
+This project was vibe coded with [Claude Code](https://claude.com/claude-code) and [Codex](https://openai.com/codex).
+
 ## License
 
 MIT

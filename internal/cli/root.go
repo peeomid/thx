@@ -16,6 +16,36 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "thx",
 		Short: "thx - Things CLI",
+		Long: `thx is a fast, scriptable CLI for Things 3 on macOS.
+
+Read operations query the Things SQLite database directly (read-only).
+Write operations use the Things URL scheme.
+
+Prerequisites:
+- macOS with Things 3 installed and opened at least once
+- Things → Settings → General → Enable Things URLs
+- Terminal app granted Full Disk Access (System Settings → Privacy & Security)
+
+Database path resolution order:
+1) --database flag
+2) config file "database"
+3) THINGSDB env var
+4) ~/Library/Group Containers/JLMPQHK86H.com.culturedcode.ThingsMac/ThingsData-*/Things Database.thingsdatabase/main.sqlite
+5) ~/Library/Group Containers/JLMPQHK86H.com.culturedcode.ThingsMac/Things Database.thingsdatabase/main.sqlite
+
+Config file (YAML):
+~/.config/thx/config.yaml
+Environment overrides use the THX_ prefix, for example:
+  THX_FORMAT=json
+  THX_DATABASE=/path/to/main.sqlite
+  THX_DEFAULTS_WHEN=today
+  THX_DEFAULTS_TAGS=work,home`,
+		Example: `  thx today
+  thx add "Buy milk" --when today --tags errands
+  thx search "project alpha" --tag work
+  thx show <id> --include-checklist
+  thx update <id> --title "New title" --when tomorrow
+  thx done <id>`,
 	}
 	cfgPath   string
 	dbPath    string
@@ -50,6 +80,8 @@ func Execute() error {
 		return nil
 	}
 
+	rootCmd.SetHelpTemplate(helpTemplate())
+
 	rootCmd.AddCommand(
 		newInboxCmd(),
 		newTodayCmd(),
@@ -70,10 +102,42 @@ func Execute() error {
 		newMoveCmd(),
 		newOpenCmd(),
 		newQuickCmd(),
+		newDoctorCmd(),
 		newVersionCmd(),
 	)
 
 	return rootCmd.Execute()
+}
+
+func helpTemplate() string {
+	return `{{with (or .Long .Short)}}{{. | trimTrailingWhitespaces}}{{end}}
+
+Usage:
+  {{.UseLine}}
+
+Examples:
+{{with .Example}}{{. | trimTrailingWhitespaces}}{{end}}
+
+Commands:
+{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{rpad .Name .NamePadding}} {{.Short}}{{end}}{{end}}
+
+Flags:
+{{.Flags.FlagUsages | trimTrailingWhitespaces}}
+
+Global Flags:
+{{.PersistentFlags.FlagUsages | trimTrailingWhitespaces}}
+
+Output Formats:
+  --format default|json|quiet
+  --json / --quiet override --format
+
+Config:
+  File: ~/.config/thx/config.yaml
+  Env:  THX_FORMAT, THX_DATABASE, THX_DEFAULTS_WHEN, THX_DEFAULTS_TAGS
+
+Use "thx help <command>" for more details about a command.
+`
 }
 
 func openStore() (*db.Store, error) {

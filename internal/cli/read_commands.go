@@ -15,6 +15,9 @@ func newInboxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "inbox",
 		Short: "Show inbox items",
+		Long:  `List all open to-dos in the Inbox.`,
+		Example: `  thx inbox
+  thx inbox --limit 20`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store, err := openStore()
 			if err != nil {
@@ -38,6 +41,12 @@ func newTodayCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "today",
 		Short: "Show today items",
+		Long: `List Today items using the same logic as Things:
+- Scheduled items with a start date
+- Scheduled Someday items that are due
+- Overdue deadlines that are not suppressed`,
+		Example: `  thx today
+  thx today --limit 50`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store, err := openStore()
 			if err != nil {
@@ -61,6 +70,9 @@ func newUpcomingCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "upcoming",
 		Short: "Show upcoming items",
+		Long:  `List scheduled Someday items with a future start date.`,
+		Example: `  thx upcoming
+  thx upcoming --range-days 30`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store, err := openStore()
 			if err != nil {
@@ -85,6 +97,9 @@ func newAnytimeCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "anytime",
 		Short: "Show anytime items",
+		Long:  `List Anytime items (including those with deadlines).`,
+		Example: `  thx anytime
+  thx anytime --limit 100`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store, err := openStore()
 			if err != nil {
@@ -108,6 +123,9 @@ func newSomedayCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "someday",
 		Short: "Show someday items",
+		Long:  `List Someday items without a start date.`,
+		Example: `  thx someday
+  thx someday --limit 50`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store, err := openStore()
 			if err != nil {
@@ -131,6 +149,9 @@ func newLogbookCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "logbook",
 		Short: "Show completed items",
+		Long:  `List completed and canceled items, newest first.`,
+		Example: `  thx logbook
+  thx logbook --limit 25`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store, err := openStore()
 			if err != nil {
@@ -154,6 +175,9 @@ func newProjectsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "projects",
 		Short: "List projects",
+		Long:  `List all open projects.`,
+		Example: `  thx projects
+  thx projects --limit 50`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store, err := openStore()
 			if err != nil {
@@ -174,8 +198,10 @@ func newProjectsCmd() *cobra.Command {
 
 func newAreasCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "areas",
-		Short: "List areas",
+		Use:     "areas",
+		Short:   "List areas",
+		Long:    `List all areas.`,
+		Example: `  thx areas`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store, err := openStore()
 			if err != nil {
@@ -195,8 +221,10 @@ func newAreasCmd() *cobra.Command {
 
 func newTagsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "tags",
-		Short: "List tags",
+		Use:     "tags",
+		Short:   "List tags",
+		Long:    `List all tags.`,
+		Example: `  thx tags`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store, err := openStore()
 			if err != nil {
@@ -219,7 +247,12 @@ func newShowCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "show <id-or-title>",
 		Short: "Show item details",
-		Args:  cobra.ExactArgs(1),
+		Long: `Show a single to-do or project by UUID or exact title.
+For projects, use --include-checklist to include checklist items in nested to-dos.`,
+		Example: `  thx show <id>
+  thx show "Project Alpha"
+  thx show <id> --include-checklist`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store, err := openStore()
 			if err != nil {
@@ -252,7 +285,13 @@ func newSearchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "search [query]",
 		Short: "Search tasks",
-		Args:  cobra.MaximumNArgs(1),
+		Long:  `Search tasks by title or notes, optionally filtered by tag, project, area, status, or deadline.`,
+		Example: `  thx search "roadmap"
+  thx search --tag work
+  thx search "alpha" --project "Project Alpha"
+  thx search --status done
+  thx search --deadline today`,
+		Args: cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 1 {
 				filter.Query = args[0]

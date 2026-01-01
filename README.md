@@ -245,7 +245,33 @@ thx inbox --limit 10           # First 10 items
 thx inbox --limit 10 --offset 10   # Next 10 items
 ```
 
+## Getting Help
+
+```bash
+# General help
+thx --help
+
+# Help for a specific command
+thx help add
+thx help search
+```
+
+Each command includes examples and detailed descriptions.
+
 ## Troubleshooting
+
+### Run the doctor
+
+If something isn't working, run the built-in diagnostics:
+
+```bash
+thx doctor
+```
+
+This checks:
+- Config file discovery
+- Database path resolution and readability
+- Things URL scheme auth token availability
 
 ### "database not found" or permission errors
 

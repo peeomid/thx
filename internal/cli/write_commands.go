@@ -24,7 +24,14 @@ func newAddCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add <title>",
 		Short: "Add a todo",
-		Args:  cobra.ExactArgs(1),
+		Long: `Add a new to-do to Things using the URL scheme.
+
+If --when is not set, the default comes from config (defaults.when).
+If --tags is not set, defaults.tags are applied.`,
+		Example: `  thx add "Buy milk"
+  thx add "Plan trip" --when someday --tags travel,personal
+  thx add "Pack bags" --project "Vacation" --checklist "Passport,Toothbrush"`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if when == "" {
 				when = appConfig.Defaults.When
@@ -68,7 +75,10 @@ func newAddProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-project <title>",
 		Short: "Add a project",
-		Args:  cobra.ExactArgs(1),
+		Long:  `Add a new project to Things.`,
+		Example: `  thx add-project "Launch v2"
+  thx add-project "Move House" --area "Personal" --todos "Book movers,Pack boxes"`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			url := things.BuildAddProjectURL(things.AddProjectOptions{
 				Title:    args[0],
@@ -93,9 +103,11 @@ func newAddProjectCmd() *cobra.Command {
 
 func newDoneCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "done <id>",
-		Short: "Mark a task complete",
-		Args:  cobra.ExactArgs(1),
+		Use:     "done <id>",
+		Short:   "Mark a task complete",
+		Long:    `Mark a task as completed by UUID.`,
+		Example: `  thx done <id>`,
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			token, err := fetchAuthToken()
 			if err != nil {
@@ -109,9 +121,11 @@ func newDoneCmd() *cobra.Command {
 
 func newCancelCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "cancel <id>",
-		Short: "Cancel a task",
-		Args:  cobra.ExactArgs(1),
+		Use:     "cancel <id>",
+		Short:   "Cancel a task",
+		Long:    `Cancel a task by UUID.`,
+		Example: `  thx cancel <id>`,
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			token, err := fetchAuthToken()
 			if err != nil {
@@ -136,7 +150,11 @@ func newUpdateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update <id>",
 		Short: "Update an item",
-		Args:  cobra.ExactArgs(1),
+		Long:  `Update fields on a to-do or project by UUID.`,
+		Example: `  thx update <id> --title "New title"
+  thx update <id> --when tomorrow --deadline 2025-01-15
+  thx update <id> --project "Project Alpha"`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if title == "" && when == "" && deadline == "" && tags == "" && project == "" && area == "" && notes == "" {
 				return errors.New("no update fields provided")
@@ -146,14 +164,14 @@ func newUpdateCmd() *cobra.Command {
 				return err
 			}
 			url := things.BuildUpdateURL(things.UpdateOptions{
-				ID:       args[0],
-				Title:    title,
-				When:     when,
-				Deadline: deadline,
-				Tags:     parseCommaList(tags),
-				Project:  project,
-				Area:     area,
-				Notes:    notes,
+				ID:        args[0],
+				Title:     title,
+				When:      when,
+				Deadline:  deadline,
+				Tags:      parseCommaList(tags),
+				Project:   project,
+				Area:      area,
+				Notes:     notes,
 				AuthToken: token,
 			})
 			return executeURL(url)
@@ -178,7 +196,11 @@ func newMoveCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "move <id>",
 		Short: "Move an item",
-		Args:  cobra.ExactArgs(1),
+		Long:  `Move a to-do into a project or area (optionally under a heading).`,
+		Example: `  thx move <id> --to-project "Project Alpha"
+  thx move <id> --to-area "Personal"
+  thx move <id> --to-project "Project Alpha" --to-heading <heading-id>`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if project == "" && area == "" && heading == "" {
 				return errors.New("no destination provided")
@@ -207,7 +229,11 @@ func newOpenCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "open <id-or-list>",
 		Short: "Open item or list in Things",
-		Args:  cobra.ExactArgs(1),
+		Long: `Open an item or list in Things.
+Valid list ids include: inbox, today, upcoming, anytime, someday, logbook.`,
+		Example: `  thx open today
+  thx open <id>`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			url := things.BuildOpenURL(args[0])
 			return executeURL(url)
@@ -218,9 +244,11 @@ func newOpenCmd() *cobra.Command {
 
 func newQuickCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "quick <text>",
-		Short: "Open quick entry with text",
-		Args:  cobra.ExactArgs(1),
+		Use:     "quick <text>",
+		Short:   "Open quick entry with text",
+		Long:    `Open the Things Quick Entry window with prefilled text.`,
+		Example: `  thx quick "Call dentist tomorrow"`,
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return executeURL(things.BuildQuickURL(args[0]))
 		},

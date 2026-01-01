@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: ./cmd/thx
+    binary: thx
+    env:
+      - CGO_ENABLED=0
+    # Things 3 is macOS only
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+brews:
+  - repository:
+      owner: peeomid
+      name: homebrew-tap
+    directory: Formula
+    homepage: "https://github.com/peeomid/thx"
+    description: "CLI for Things 3 on macOS"
+    license: "MIT"
+    install: |
+      bin.install "thx"
+
+release:
+  footer: >-
+
+    ---
+
+    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).

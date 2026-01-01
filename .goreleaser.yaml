@@ -12,6 +12,9 @@ builds:
     binary: thx
     env:
       - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -X thx/internal/cli.version={{.Version}}
     # Things 3 is macOS only
     goos:
       - darwin
